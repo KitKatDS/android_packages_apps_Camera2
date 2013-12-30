@@ -2110,7 +2110,8 @@ public class PhotoModule
             mParameters.setColorEffect(colorEffect);
         }
         //Set Saturation
-        if (CameraUtil.isSupported(mParameters, "saturation")) {
+        if (CameraUtil.isSupported(mParameters, "saturation") &&
+                CameraUtil.isSupported(mParameters, "saturation-max")) {
             String saturationStr = mPreferences.getString(
                     CameraSettings.KEY_SATURATION,
                     mActivity.getString(R.string.pref_camera_saturation_default));
@@ -2121,7 +2122,8 @@ public class PhotoModule
             }
         }
         // Set contrast parameter.
-        if (CameraUtil.isSupported(mParameters, "contrast")) {
+        if (CameraUtil.isSupported(mParameters, "contrast") &&
+                CameraUtil.isSupported(mParameters, "contrast-max")) {
             String contrastStr = mPreferences.getString(
                     CameraSettings.KEY_CONTRAST,
                     mActivity.getString(R.string.pref_camera_contrast_default));
@@ -2132,7 +2134,8 @@ public class PhotoModule
             }
         }
         // Set sharpness parameter
-        if (CameraUtil.isSupported(mParameters, "sharpness")) {
+        if (CameraUtil.isSupported(mParameters, "sharpness") &&
+                CameraUtil.isSupported(mParameters, "sharpness-max")) {
             String sharpnessStr = mPreferences.getString(
                     CameraSettings.KEY_SHARPNESS,
                     mActivity.getString(R.string.pref_camera_sharpness_default));
@@ -2179,7 +2182,7 @@ public class PhotoModule
             mParameters.setAntibanding(antiBanding);
         }
 
-        boolean zsl = mActivity.getResources().getBoolean(R.bool.enableZSL);
+        boolean zsl = CameraUtil.isZSLEnabled();
         String hdr = mPreferences.getString(CameraSettings.KEY_CAMERA_HDR,
                 mActivity.getString(R.string.pref_camera_hdr_default));
         String format = mPreferences.getString(CameraSettings.KEY_PICTURE_FORMAT,
@@ -2191,16 +2194,16 @@ public class PhotoModule
             zsl = false;
         }
 
-        mParameters.setZSLMode(zsl ? "on" : "off");
-
         if(zsl) {
             //Switch on ZSL Camera mode
             mSnapshotMode = CameraInfo.CAMERA_SUPPORT_MODE_ZSL;
+            mParameters.setZSLMode("on");
             mParameters.setCameraMode(1);
             mFocusManager.setZslEnable(true);
 
         } else {
             mSnapshotMode = CameraInfo.CAMERA_SUPPORT_MODE_NONZSL;
+            mParameters.setZSLMode("off");
             mParameters.setCameraMode(0);
             mFocusManager.setZslEnable(false);
         }

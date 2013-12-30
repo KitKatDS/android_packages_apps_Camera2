@@ -118,12 +118,18 @@ public class CameraUtil {
     public static final String TRUE = "true";
     public static final String FALSE = "false";
 
+    private static boolean sEnableZSL;
+
     // Fields for the show-on-maps-functionality
     private static final String MAPS_PACKAGE_NAME = "com.google.android.apps.maps";
     private static final String MAPS_CLASS_NAME = "com.google.android.maps.MapsActivity";
 
     /** Has to be in sync with the receiving MovieActivity. */
     public static final String KEY_TREAT_UP_AS_BACK = "treat-up-as-back";
+
+    public static boolean isZSLEnabled() {
+        return sEnableZSL;
+    }
 
     public static boolean isSupported(String value, List<String> supported) {
         return supported == null ? false : supported.indexOf(value) >= 0;
@@ -195,6 +201,7 @@ public class CameraUtil {
         sPixelDensity = metrics.density;
         sImageFileNamer = new ImageFileNamer(
                 context.getString(R.string.image_file_name_format));
+        sEnableZSL = context.getResources().getBoolean(R.bool.enableZSL);
     }
 
     public static int dpToPixel(int dp) {
@@ -438,6 +445,12 @@ public class CameraUtil {
             case Surface.ROTATION_270: return 270;
         }
         return 0;
+    }
+
+    public static boolean isScreenRotated(Activity activity) {
+        int rotation = activity.getWindowManager().getDefaultDisplay()
+                .getRotation();
+        return rotation != Surface.ROTATION_0 && rotation != Surface.ROTATION_180;
     }
 
     /**
