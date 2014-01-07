@@ -455,7 +455,8 @@ public class FocusOverlayManager {
         if (mParameters == null) return Parameters.FOCUS_MODE_AUTO;
         List<String> supportedFocusModes = mParameters.getSupportedFocusModes();
 
-        if (mFocusAreaSupported && !mFocusDefault) {
+        if (mFocusAreaSupported && !mFocusDefault
+                 && !CameraUtil.noFocusModeChangeForTouch()) {
             // Always use autofocus in tap-to-focus.
             mFocusMode = Parameters.FOCUS_MODE_AUTO;
         } else {
@@ -519,6 +520,15 @@ public class FocusOverlayManager {
             } else if (mState == STATE_FAIL) {
                 mUI.onFocusFailed(false);
             }
+        }
+    }
+
+    public void restartTouchFocusTimer() {
+        if (mZslEnabled && (!mFocusDefault) && (mFocusTime != 0)) {
+            mHandler.removeMessages(RESET_TOUCH_FOCUS);
+            mHandler.sendEmptyMessageDelayed(RESET_TOUCH_FOCUS, mFocusTime);
+        } else {
+            resetTouchFocus();
         }
     }
 
@@ -593,7 +603,8 @@ public class FocusOverlayManager {
     }
 
     private boolean needAutoFocusCall() {
-        return getFocusMode().equals(Parameters.FOCUS_MODE_AUTO);
+        return getFocusMode().equals(Parameters.FOCUS_MODE_AUTO) &&
+            !(mZslEnabled && (mHandler.hasMessages(RESET_TOUCH_FOCUS)));
     }
 
     public void setZslEnable(boolean value) {
